@@ -35,11 +35,14 @@ public partial class AccountViewModel : ObservableObject
     [ObservableProperty]
     private bool _isCodeVisible = true;
 
-    public string Id => _account.Id;
-    public string Issuer => string.IsNullOrWhiteSpace(_account.Issuer) ? _account.AccountName : _account.Issuer;
+    public string Id          => _account.Id;
+    public string Issuer      => string.IsNullOrWhiteSpace(_account.Issuer) ? _account.AccountName : _account.Issuer;
     public string AccountName => _account.AccountName;
     public string AccentColor { get; }
     public SolidColorBrush AccentBrush { get; }
+
+    /// <summary>First letter of the issuer name — shown in the avatar circle.</summary>
+    public string AvatarLetter => Issuer.Length > 0 ? Issuer[0].ToString().ToUpperInvariant() : "?";
 
     public string FormattedCode
     {
@@ -58,9 +61,13 @@ public partial class AccountViewModel : ObservableObject
 
     public AccountViewModel(TotpAccount account, TotpService totpService, int index = 0)
     {
-        _account = account;
+        _account     = account;
         _totpService = totpService;
-        AccentColor = AccentPalette[index % AccentPalette.Length];
+
+        // Colour is derived from the issuer name so it stays consistent
+        // regardless of account order or deletions.
+        var name = string.IsNullOrWhiteSpace(account.Issuer) ? account.AccountName : account.Issuer;
+        AccentColor = AccentPalette[Math.Abs(name.GetHashCode()) % AccentPalette.Length];
         AccentBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(AccentColor));
         Refresh();
     }

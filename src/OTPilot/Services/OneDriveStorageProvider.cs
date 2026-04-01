@@ -52,7 +52,7 @@ public class OneDriveStorageProvider : IStorageProvider
 
     public async Task SaveAsync(byte[] data)
     {
-        var key = await GetOrFetchKeyAsync() ?? GenerateAndStoreKey();
+        var key = await GetOrFetchKeyAsync() ?? await GenerateAndStoreKeyAsync();
 
         var folder = Path.GetDirectoryName(_vaultPath)!;
         if (!Directory.Exists(folder))
@@ -82,7 +82,7 @@ public class OneDriveStorageProvider : IStorageProvider
         return remoteKey;
     }
 
-    private byte[] GenerateAndStoreKey()
+    private async Task<byte[]> GenerateAndStoreKeyAsync()
     {
         var key = new byte[32];
         RandomNumberGenerator.Fill(key);
@@ -92,10 +92,10 @@ public class OneDriveStorageProvider : IStorageProvider
             Directory.CreateDirectory(folder);
 
         // Store raw key in OneDrive (access-controlled by Entra ID auth)
-        File.WriteAllBytes(_keyPath, key);
+        await File.WriteAllBytesAsync(_keyPath, key);
 
         // Cache locally with DPAPI
-        CacheKeyLocallyAsync(key).GetAwaiter().GetResult();
+        await CacheKeyLocallyAsync(key);
 
         return key;
     }

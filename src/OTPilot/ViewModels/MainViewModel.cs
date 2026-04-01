@@ -28,12 +28,16 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private string _statusMessage = string.Empty;
 
+    [ObservableProperty]
+    private string _storageName = "Local";
+
     public bool HasAccounts => Accounts.Count > 0;
 
-    public MainViewModel(VaultService vaultService, TotpService totpService)
+    public MainViewModel(VaultService vaultService, TotpService totpService, string storageName = "Local")
     {
         _vaultService = vaultService;
-        _totpService = totpService;
+        _totpService  = totpService;
+        _storageName  = storageName;
 
         _timer = new DispatcherTimer(DispatcherPriority.Render)
         {

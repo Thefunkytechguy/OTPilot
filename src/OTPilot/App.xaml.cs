@@ -2,6 +2,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using Hardcodet.Wpf.TaskbarNotification;
+using OTPilot.Models;
 using OTPilot.Services;
 using OTPilot.ViewModels;
 using OTPilot.Views;
@@ -12,36 +13,86 @@ public partial class App : Application
 {
     private TaskbarIcon? _trayIcon;
     private static bool _isExiting;
+    private static Mutex? _singleInstanceMutex;
+    private static EventWaitHandle? _showWindowEvent;
+    private Thread? _listenerThread;
 
-    // Expose flag so MainWindow.Closing can check it
     public static bool IsExiting => _isExiting;
 
-    protected override void OnStartup(StartupEventArgs e)
+    protected override async void OnStartup(StartupEventArgs e)
     {
+        // ── Single-instance guard ──────────────────────────────────────────
+        _singleInstanceMutex = new Mutex(true, "Global\\OTPilot_SingleInstance", out bool isFirstInstance);
+        if (!isFirstInstance)
+        {
+            // Signal the running instance to show its window, then exit
+            try
+            {
+                var ev = EventWaitHandle.OpenExisting("Global\\OTPilot_ShowWindow");
+                ev.Set();
+            }
+            catch { }
+            Shutdown();
+            return;
+        }
+
+        // Listen for show-window signals from any future second instance
+        _showWindowEvent = new EventWaitHandle(false, EventResetMode.AutoReset, "Global\\OTPilot_ShowWindow");
+        _listenerThread  = new Thread(() =>
+        {
+            while (true)
+            {
+                _showWindowEvent.WaitOne();
+                Dispatcher.Invoke(ShowMainWindow);
+            }
+        })
+        { IsBackground = true };
+        _listenerThread.Start();
+
         base.OnStartup(e);
 
-        // ── Wire up services ──────────────────────────────────────────────
-        var vaultPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "OTPilot", "vault.dat");
+        // ── Load or create config ──────────────────────────────────────────
+        var config = await AppConfigService.LoadAsync();
 
-        var storage = new LocalStorageProvider(vaultPath);
+        if (!config.SetupComplete)
+        {
+            var setup = new StorageSetupWindow();
+            if (setup.ShowDialog() != true || setup.ResultConfig is null)
+            {
+                // User closed the wizard without completing — exit cleanly
+                Shutdown();
+                return;
+            }
+            config = setup.ResultConfig;
+            await AppConfigService.SaveAsync(config);
+        }
+
+        // ── Wire up storage provider based on config ───────────────────────
+        IStorageProvider storage = config.StorageType switch
+        {
+            "OneDrive" => new OneDriveStorageProvider(),
+            "Custom"   => new LocalStorageProvider(
+                              Path.Combine(config.CustomPath!, "OTPilot", "vault.dat")),
+            _          => new LocalStorageProvider(
+                              Path.Combine(
+                                  Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                                  "OTPilot", "vault.dat"))
+        };
+
         var vaultService = new VaultService(storage);
-        var totpService = new TotpService();
+        var totpService  = new TotpService();
 
-        // ── Setup system tray icon ────────────────────────────────────────
+        // ── Setup system tray ──────────────────────────────────────────────
         _trayIcon = new TaskbarIcon
         {
-            Icon = CreateTrayIcon(),
+            Icon        = LoadTrayIcon(),
             ToolTipText = "OTPilot — Authenticator"
         };
         _trayIcon.TrayMouseDoubleClick += (_, _) => ToggleMainWindow();
 
-        var menu = new ContextMenu();
-
+        var menu     = new ContextMenu();
         var showItem = new MenuItem { Header = "Show OTPilot" };
         showItem.Click += (_, _) => ShowMainWindow();
-
         var exitItem = new MenuItem { Header = "Exit" };
         exitItem.Click += (_, _) => ExitApp();
 
@@ -50,8 +101,8 @@ public partial class App : Application
         menu.Items.Add(exitItem);
         _trayIcon.ContextMenu = menu;
 
-        // ── Create main window ────────────────────────────────────────────
-        var viewModel = new MainViewModel(vaultService, totpService);
+        // ── Create main window ─────────────────────────────────────────────
+        var viewModel  = new MainViewModel(vaultService, totpService, storage.DisplayName);
         var mainWindow = new MainWindow(viewModel);
         MainWindow = mainWindow;
         mainWindow.Show();
@@ -60,10 +111,11 @@ public partial class App : Application
     protected override void OnExit(ExitEventArgs e)
     {
         _trayIcon?.Dispose();
+        _showWindowEvent?.Dispose();
+        _singleInstanceMutex?.ReleaseMutex();
+        _singleInstanceMutex?.Dispose();
         base.OnExit(e);
     }
-
-    // ── Tray helpers ──────────────────────────────────────────────────────
 
     private void ToggleMainWindow()
     {
@@ -88,42 +140,17 @@ public partial class App : Application
         Shutdown();
     }
 
-    // ── Programmatic tray icon ────────────────────────────────────────────
-
-    [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
-    private static extern bool DestroyIcon(IntPtr handle);
-
-    private static System.Drawing.Icon CreateTrayIcon()
+    private static System.Drawing.Icon LoadTrayIcon()
     {
-        using var bitmap = new System.Drawing.Bitmap(32, 32);
-        using var g = System.Drawing.Graphics.FromImage(bitmap);
-
-        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-        g.Clear(System.Drawing.Color.Transparent);
-
-        // Blue circle background
-        g.FillEllipse(
-            new System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(37, 99, 235)),
-            1, 1, 30, 30);
-
-        // White "O" letter
-        using var font = new System.Drawing.Font(
-            "Segoe UI", 14, System.Drawing.FontStyle.Bold,
-            System.Drawing.GraphicsUnit.Pixel);
-
-        var sf = new System.Drawing.StringFormat
+        try
         {
-            Alignment = System.Drawing.StringAlignment.Center,
-            LineAlignment = System.Drawing.StringAlignment.Center
-        };
+            var sri = Application.GetResourceStream(
+                new Uri("pack://application:,,,/Resources/OTPilot.ico"));
+            if (sri != null)
+                return new System.Drawing.Icon(sri.Stream);
+        }
+        catch { }
 
-        g.DrawString("O", font, System.Drawing.Brushes.White,
-            new System.Drawing.RectangleF(0, 0, 32, 32), sf);
-
-        // Clone the icon properly (GetHicon handle must be released)
-        var handle = bitmap.GetHicon();
-        var icon = (System.Drawing.Icon)System.Drawing.Icon.FromHandle(handle).Clone();
-        DestroyIcon(handle);
-        return icon;
+        return System.Drawing.SystemIcons.Application;
     }
 }

@@ -75,11 +75,11 @@ public partial class AddAccountWindow : Window
         var screenshot = CaptureFullScreen();
         if (screenshot is null) return null;
 
-        // 2. Show the selection overlay
-        Hide();
+        // 2. Show the selection overlay — it is Topmost + Maximized so it
+        //    covers everything. Do NOT Hide/Show this dialog window as that
+        //    breaks WPF's modal dialog state and causes a crash on close.
         var overlay = new ScreenCaptureOverlay(screenshot);
         var selection = await overlay.GetSelectionAsync();
-        Show();
         Activate();
 
         if (selection is null)

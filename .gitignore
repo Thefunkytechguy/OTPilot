@@ -361,3 +361,12 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+# OTPilot — generated / local-only files
+OTPilot_Design_Document.docx
+generate_otpilot_doc.js
+.claude/
+
+# Intune — binary tools and packaged output (scripts are committed; artifacts are not)
+Intune/IntuneWinAppUtil.exe
+Intune/output/
+Intune/package/OTPilot.exe

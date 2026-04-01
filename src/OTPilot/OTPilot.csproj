@@ -4,12 +4,28 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
-<AssemblyName>OTPilot</AssemblyName>
+    <AssemblyName>OTPilot</AssemblyName>
     <RootNamespace>OTPilot</RootNamespace>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <!-- Product metadata — bump Version for each release -->
+    <Version>1.3.0</Version>
+    <AssemblyVersion>1.3.0.0</AssemblyVersion>
+    <FileVersion>1.3.0.0</FileVersion>
+    <Product>OTPilot</Product>
+    <Authors>Eugene Myburgh</Authors>
+    <Company>Eugene Myburgh</Company>
+    <Description>A secure, roaming-friendly TOTP authenticator for enterprise hot-desk environments.</Description>
+    <Copyright>Copyright © 2026 Eugene Myburgh</Copyright>
+    <RepositoryUrl>https://github.com/Thefunkytechguy/OTPilot</RepositoryUrl>
+    <ApplicationIcon>Resources\OTPilot.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\OTPilot.ico"/>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />

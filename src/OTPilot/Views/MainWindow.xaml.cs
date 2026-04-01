@@ -32,21 +32,31 @@ public partial class MainWindow : Window
 
     // ── Sidebar buttons ───────────────────────────────────────────────────
 
-    private void AddAccount_Click(object sender, RoutedEventArgs e)
+    private async void AddAccount_Click(object sender, RoutedEventArgs e)
     {
         var dialog = new AddAccountWindow();
         dialog.Owner = this;
         if (dialog.ShowDialog() == true && dialog.Result is not null)
-            _ = _viewModel.AddAccountAsync(dialog.Result);
+        {
+            try
+            {
+                await _viewModel.AddAccountAsync(dialog.Result);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Failed to save account.\n\n{ex.Message}",
+                    "OTPilot — Save Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+        }
     }
 
     private void About_Click(object sender, RoutedEventArgs e)
     {
-        MessageBox.Show(
-            "OTPilot v1.0\n\nA secure, roaming-friendly TOTP authenticator\ndesigned for enterprise hot-desk environments.\n\ngithub.com/your-org/otpilot",
-            "About OTPilot",
-            MessageBoxButton.OK,
-            MessageBoxImage.Information);
+        var about = new AboutWindow { Owner = this };
+        about.ShowDialog();
     }
 
     // ── Account card actions ──────────────────────────────────────────────

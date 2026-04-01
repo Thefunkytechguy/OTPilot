@@ -6,41 +6,78 @@
         xmlns:vm="clr-namespace:OTPilot.ViewModels"
         mc:Ignorable="d"
         Title="OTPilot"
-        Width="360" Height="580"
-        MinWidth="320" MinHeight="400"
+        Icon="/Resources/OTPilot.ico"
+        Width="390" Height="640"
+        MinWidth="350" MinHeight="440"
         WindowStartupLocation="CenterScreen"
-        Background="#F3F4F6"
+        UseLayoutRounding="True"
+        TextOptions.TextFormattingMode="Display"
+        TextOptions.TextRenderingMode="ClearType"
+        RenderOptions.ClearTypeHint="Enabled"
         Closing="Window_Closing">
+
+    <!-- Subtle white → ice-blue gradient background -->
+    <Window.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#FFFFFF" Offset="0"/>
+            <GradientStop Color="#EBF3FF" Offset="1"/>
+        </LinearGradientBrush>
+    </Window.Background>
 
     <Window.Resources>
 
-        <!-- Accent colour converter -->
-        <SolidColorBrush x:Key="SidebarBrush" Color="#111827"/>
-        <SolidColorBrush x:Key="AccentBlueBrush" Color="#2563EB"/>
+        <DropShadowEffect x:Key="CardShadow"
+                          BlurRadius="12" ShadowDepth="2"
+                          Color="#2563EB" Opacity="0.07"
+                          Direction="270"/>
 
-        <!-- Sidebar icon button style -->
-        <Style x:Key="SidebarButton" TargetType="Button">
-            <Setter Property="Background" Value="Transparent"/>
+        <DropShadowEffect x:Key="FabShadow"
+                          BlurRadius="18" ShadowDepth="4"
+                          Color="#2563EB" Opacity="0.35"
+                          Direction="270"/>
+
+        <!-- Floating Action Button (+ Add) -->
+        <Style x:Key="FabButton" TargetType="Button">
+            <Setter Property="Width"           Value="58"/>
+            <Setter Property="Height"          Value="58"/>
+            <Setter Property="Cursor"          Value="Hand"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Width" Value="52"/>
-            <Setter Property="Height" Value="52"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Foreground" Value="#9CA3AF"/>
+            <Setter Property="Effect"          Value="{StaticResource FabShadow}"/>
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value><ScaleTransform/></Setter.Value>
+            </Setter>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}"
-                                CornerRadius="0">
-                            <ContentPresenter HorizontalAlignment="Center"
-                                              VerticalAlignment="Center"/>
+                        <Border CornerRadius="29">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                    <GradientStop Color="#00B4EF" Offset="0"/>
+                                    <GradientStop Color="#00A0DF" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <TextBlock Text="+"
+                                       FontSize="34" FontWeight="Bold"
+                                       Foreground="White" FontFamily="Segoe UI"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Margin="0,-3,0,0"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#1F2937"/>
-                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="1.07" ScaleY="1.07"/>
+                                    </Setter.Value>
+                                </Setter>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="#374151"/>
+                                <Setter Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.96" ScaleY="0.96"/>
+                                    </Setter.Value>
+                                </Setter>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -48,41 +85,69 @@
             </Setter>
         </Style>
 
-        <!-- Account card style -->
-        <Style x:Key="AccountCard" TargetType="Border">
-            <Setter Property="Background" Value="White"/>
-            <Setter Property="CornerRadius" Value="6"/>
-            <Setter Property="Margin" Value="10,5,10,5"/>
-            <Setter Property="Effect">
+        <!-- Top-bar icon button -->
+        <Style x:Key="TopBarButton" TargetType="Button">
+            <Setter Property="Background"      Value="Transparent"/>
+            <Setter Property="Foreground"      Value="#64748B"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Width"           Value="34"/>
+            <Setter Property="Height"          Value="34"/>
+            <Setter Property="Cursor"          Value="Hand"/>
+            <Setter Property="Template">
                 <Setter.Value>
-                    <DropShadowEffect BlurRadius="6" ShadowDepth="1"
-                                      Color="#000000" Opacity="0.08"
-                                      Direction="270"/>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="7">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#1E293B"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
 
-        <!-- Copy button style -->
+        <!-- Copy button on card -->
         <Style x:Key="CopyButton" TargetType="Button">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Padding" Value="8,4"/>
-            <Setter Property="FontSize" Value="11"/>
-            <Setter Property="Foreground" Value="#6B7280"/>
+            <Setter Property="Foreground"      Value="#2563EB"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush"     Value="#BFDBFE"/>
+            <Setter Property="Padding"         Value="10,6"/>
+            <Setter Property="FontFamily"      Value="Segoe UI"/>
+            <Setter Property="FontSize"        Value="12"/>
+            <Setter Property="FontWeight"      Value="SemiBold"/>
+            <Setter Property="Cursor"          Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}"
-                                CornerRadius="4"
+                        <Border BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6"
                                 Padding="{TemplateBinding Padding}">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                    <GradientStop Color="#EFF6FF" Offset="0"/>
+                                    <GradientStop Color="#DBEAFE" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
                             <ContentPresenter HorizontalAlignment="Center"
                                               VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#F3F4F6"/>
-                                <Setter Property="Foreground" Value="#111827"/>
+                                <Setter Property="BorderBrush" Value="#93C5FD"/>
+                                <Setter Property="Foreground"  Value="#1D4ED8"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Foreground" Value="#1E40AF"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground"  Value="#16A34A"/>
+                                <Setter Property="BorderBrush" Value="#86EFAC"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -90,49 +155,36 @@
             </Setter>
         </Style>
 
-        <!-- Delete button style -->
+        <!-- Delete button on card -->
         <Style x:Key="DeleteButton" TargetType="Button">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Padding" Value="6,4"/>
-            <Setter Property="FontSize" Value="11"/>
-            <Setter Property="Foreground" Value="#D1D5DB"/>
+            <Setter Property="Background"      Value="#FEF2F2"/>
+            <Setter Property="Foreground"      Value="#FCA5A5"/>
+            <Setter Property="BorderBrush"     Value="#FECACA"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Width"           Value="32"/>
+            <Setter Property="Height"          Value="32"/>
+            <Setter Property="Cursor"          Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border Background="{TemplateBinding Background}"
-                                CornerRadius="4"
-                                Padding="{TemplateBinding Padding}">
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6">
                             <ContentPresenter HorizontalAlignment="Center"
                                               VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Foreground" Value="#EF4444"/>
+                                <Setter Property="Background"  Value="#FEE2E2"/>
+                                <Setter Property="Foreground"  Value="#EF4444"/>
+                                <Setter Property="BorderBrush" Value="#FCA5A5"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#FECACA"/>
+                                <Setter Property="Foreground" Value="#DC2626"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!-- Progress bar style (slim, no animation) -->
-        <Style x:Key="TimerProgressBar" TargetType="ProgressBar">
-            <Setter Property="Height" Value="3"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Background" Value="#E5E7EB"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ProgressBar">
-                        <Border CornerRadius="0,0,6,6" Background="{TemplateBinding Background}">
-                            <Border x:Name="PART_Track">
-                                <Border x:Name="PART_Indicator"
-                                        HorizontalAlignment="Left"
-                                        Background="{TemplateBinding Foreground}"
-                                        CornerRadius="0,0,0,6"/>
-                            </Border>
-                        </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -141,101 +193,138 @@
     </Window.Resources>
 
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="52"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="58"/>  <!-- Top bar           -->
+            <RowDefinition Height="3"/>   <!-- Global timer strip -->
+            <RowDefinition Height="44"/>  <!-- Sub-header        -->
+            <RowDefinition Height="*"/>   <!-- Account list      -->
+        </Grid.RowDefinitions>
 
-        <!-- ── Sidebar ────────────────────────────────────────────────────── -->
-        <Grid Grid.Column="0" Background="#111827">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+        <!-- ── Top navigation bar ───────────────────────────────────────── -->
+        <Border Grid.Row="0" Padding="16,0">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#111827" Offset="0"/>
+                    <GradientStop Color="#0F172A" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
 
-            <!-- App logo / top icon -->
-            <Border Grid.Row="0" Height="52" Background="#2563EB">
-                <TextBlock Text="O" FontSize="22" FontWeight="Bold"
-                           Foreground="White"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"/>
-            </Border>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
-            <!-- Add account button -->
-            <StackPanel Grid.Row="1" VerticalAlignment="Top" Margin="0,8,0,0">
-                <Button Style="{StaticResource SidebarButton}"
-                        ToolTip="Add Account"
-                        Click="AddAccount_Click">
-                    <TextBlock Text="+" FontSize="24" FontWeight="Light"/>
-                </Button>
-            </StackPanel>
+                <!-- Logo + name -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Image Source="/Resources/OTPilot.ico"
+                           Width="30" Height="30"
+                           RenderOptions.BitmapScalingMode="HighQuality"/>
+                    <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                        <TextBlock FontFamily="Bahnschrift"
+                                   FontSize="17" FontWeight="SemiBold"
+                                   LineHeight="18">
+                            <Run Text="OTP " Foreground="#00A0DF"/>
+                            <Run Text="Pilot" Foreground="#F2F2F2"/>
+                        </TextBlock>
+                        <TextBlock Text="AUTHENTICATOR"
+                                   FontFamily="Bahnschrift SemiLight"
+                                   FontSize="7.5"
+                                   Foreground="#00A0DF"
+                                   Margin="1,1,0,0"/>
+                    </StackPanel>
+                </StackPanel>
 
-            <!-- Bottom actions -->
-            <StackPanel Grid.Row="2" VerticalAlignment="Bottom" Margin="0,0,0,8">
-                <Button Style="{StaticResource SidebarButton}"
-                        ToolTip="About OTPilot"
-                        Click="About_Click">
-                    <TextBlock Text="?" FontSize="16" FontWeight="Bold"/>
-                </Button>
-            </StackPanel>
-        </Grid>
+                <!-- Storage indicator -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal"
+                            HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Ellipse Width="7" Height="7" Fill="#22C55E" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding StorageName, Mode=OneWay}"
+                               FontSize="11" Foreground="#F2F2F2" Opacity="0.5"
+                               FontFamily="Bahnschrift SemiLight"
+                               Margin="6,0,0,0" VerticalAlignment="Center"/>
+                </StackPanel>
 
-        <!-- ── Main content area ─────────────────────────────────────────── -->
-        <Grid Grid.Column="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>  <!-- Header bar -->
-                <RowDefinition Height="4"/>      <!-- Global timer strip -->
-                <RowDefinition Height="*"/>      <!-- Account list -->
-            </Grid.RowDefinitions>
+                <!-- Help + About buttons -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <Button Style="{StaticResource TopBarButton}"
+                            Click="Help_Click" ToolTip="Help">
+                        <TextBlock Text="&#xE9CE;"
+                                   FontFamily="Segoe MDL2 Assets" FontSize="16"/>
+                    </Button>
+                    <Button Style="{StaticResource TopBarButton}"
+                            Click="About_Click" ToolTip="About OTPilot">
+                        <TextBlock Text="&#xE946;"
+                                   FontFamily="Segoe MDL2 Assets" FontSize="16"/>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
 
-            <!-- Header -->
-            <Border Grid.Row="0" Background="White" Padding="14,10">
-                <Grid>
-                    <TextBlock Text="Accounts"
-                               FontSize="14" FontWeight="SemiBold"
-                               Foreground="#111827"
-                               VerticalAlignment="Center"/>
-                    <TextBlock HorizontalAlignment="Right"
-                               VerticalAlignment="Center"
-                               FontSize="11" Foreground="#9CA3AF">
-                        <Run Text="{Binding GlobalSecondsRemaining, Mode=OneWay}"/>
-                        <Run Text="s"/>
-                    </TextBlock>
-                </Grid>
-            </Border>
+        <!-- ── Global progress strip ─────────────────────────────────────── -->
+        <ProgressBar Grid.Row="1"
+                     Value="{Binding GlobalProgress, Mode=OneWay}"
+                     Minimum="0" Maximum="100"
+                     BorderThickness="0">
+            <ProgressBar.Foreground>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                    <GradientStop Color="#60A5FA" Offset="0"/>
+                    <GradientStop Color="#2563EB" Offset="1"/>
+                </LinearGradientBrush>
+            </ProgressBar.Foreground>
+            <ProgressBar.Background>
+                <SolidColorBrush Color="#1E293B"/>
+            </ProgressBar.Background>
+        </ProgressBar>
 
-            <!-- Global timer bar -->
-            <ProgressBar Grid.Row="1"
-                         Value="{Binding GlobalProgress, Mode=OneWay}"
-                         Minimum="0" Maximum="100"
-                         Foreground="#2563EB"
-                         Background="#E5E7EB"
-                         BorderThickness="0"
-                         Height="4"/>
+        <!-- ── Sub-header (account count only) ──────────────────────────── -->
+        <Border Grid.Row="2" Background="White"
+                BorderBrush="#E2E8F0" BorderThickness="0,0,0,1"
+                Padding="18,0">
+            <TextBlock VerticalAlignment="Center"
+                       FontFamily="Segoe UI" FontSize="13" Foreground="#64748B">
+                <Run Text="{Binding Accounts.Count, Mode=OneWay}"
+                     FontWeight="Bold" Foreground="#0F172A" FontSize="14"/>
+                <Run Text=" Accounts"/>
+            </TextBlock>
+        </Border>
 
-            <!-- Account list -->
-            <ScrollViewer Grid.Row="2"
-                          VerticalScrollBarVisibility="Auto"
+        <!-- ── Account list + FAB overlay ───────────────────────────────── -->
+        <Grid Grid.Row="3">
+
+            <!-- Watermark — very low opacity OTPilot "O" branded in background -->
+            <TextBlock Text="O"
+                       FontSize="220" FontWeight="Bold" FontFamily="Segoe UI"
+                       Foreground="#2563EB" Opacity="0.030"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       IsHitTestVisible="False"
+                       Margin="0,40,0,0"/>
+
+            <!-- Account scroll area — bottom padding keeps FAB from covering last card -->
+            <ScrollViewer VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Disabled"
-                          Padding="0,5,0,10">
-
-                <!-- Empty state -->
+                          Padding="0,8,0,80">
                 <Grid>
+
+                    <!-- Empty state -->
                     <StackPanel HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
-                                Margin="30"
+                                Margin="40,50,40,0"
                                 Visibility="{Binding HasAccounts, Converter={StaticResource InverseBoolToVisibility}}">
+                        <TextBlock Text="&#xE899;"
+                                   FontFamily="Segoe MDL2 Assets" FontSize="56"
+                                   Foreground="#CBD5E1"
+                                   HorizontalAlignment="Center" Margin="0,0,0,18"/>
                         <TextBlock Text="No accounts yet"
                                    FontSize="16" FontWeight="SemiBold"
-                                   Foreground="#6B7280"
+                                   Foreground="#475569" FontFamily="Segoe UI"
                                    HorizontalAlignment="Center"/>
-                        <TextBlock Text="Click the + button to add your first account."
-                                   FontSize="12" Foreground="#9CA3AF"
-                                   HorizontalAlignment="Center"
-                                   TextAlignment="Center"
-                                   Margin="0,6,0,0"
-                                   TextWrapping="Wrap"/>
+                        <TextBlock Text="Tap the blue + button below to add your first account."
+                                   FontSize="13" Foreground="#94A3B8" FontFamily="Segoe UI"
+                                   HorizontalAlignment="Center" TextAlignment="Center"
+                                   Margin="0,8,0,0" TextWrapping="Wrap"/>
                     </StackPanel>
 
                     <!-- Account cards -->
@@ -243,74 +332,157 @@
                                   Visibility="{Binding HasAccounts, Converter={StaticResource BoolToVisibility}}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate d:DataType="{x:Type vm:AccountViewModel}">
-                                <Border Style="{StaticResource AccountCard}">
+                                <Border Margin="14,5,14,5"
+                                        CornerRadius="12"
+                                        BorderThickness="1"
+                                        Effect="{StaticResource CardShadow}">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="BorderBrush" Value="#93C5FD"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                            <GradientStop Color="#FFFFFF" Offset="0"/>
+                                            <GradientStop Color="#F8FBFF" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+
                                     <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="*"/>
-                                            <RowDefinition Height="3"/>  <!-- Per-card timer -->
+                                            <RowDefinition Height="4"/>
                                         </Grid.RowDefinitions>
 
-                                        <!-- Card content -->
-                                        <Grid Grid.Row="0" Margin="0,10,10,8">
+                                        <!-- Card body -->
+                                        <Grid Grid.Row="0" Margin="14,14,12,12">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="4"/>
+                                                <ColumnDefinition Width="Auto"/>
                                                 <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
 
-                                            <!-- Accent bar -->
-                                            <Rectangle Grid.Column="0"
-                                                       Fill="{Binding AccentBrush}"
-                                                       VerticalAlignment="Stretch"
-                                                       RadiusX="2" RadiusY="2"/>
+                                            <!-- Avatar -->
+                                            <Border Grid.Column="0"
+                                                    Width="48" Height="48" CornerRadius="24"
+                                                    Background="{Binding AccentBrush}"
+                                                    VerticalAlignment="Center"
+                                                    Margin="0,0,14,0">
+                                                <Border.Effect>
+                                                    <DropShadowEffect BlurRadius="8" ShadowDepth="2"
+                                                                      Color="#000000" Opacity="0.15"
+                                                                      Direction="270"/>
+                                                </Border.Effect>
+                                                <TextBlock Text="{Binding AvatarLetter}"
+                                                           FontSize="21" FontWeight="Bold"
+                                                           Foreground="White" FontFamily="Segoe UI"
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center"/>
+                                            </Border>
 
-                                            <!-- Text content -->
-                                            <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                                            <!-- Text -->
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                                 <TextBlock Text="{Binding Issuer}"
-                                                           FontSize="11"
-                                                           Foreground="#6B7280"
+                                                           FontSize="12" FontWeight="SemiBold"
+                                                           Foreground="#64748B" FontFamily="Segoe UI"
                                                            TextTrimming="CharacterEllipsis"/>
                                                 <TextBlock Text="{Binding FormattedCode}"
-                                                           FontSize="28"
-                                                           FontWeight="Bold"
-                                                           Foreground="#111827"
+                                                           FontSize="30" FontWeight="Bold"
+                                                           Foreground="#0F172A"
                                                            FontFamily="Consolas, Courier New"
-                                                           Margin="0,2,0,2"/>
+                                                           Margin="0,4,0,4"
+                                                           SnapsToDevicePixels="True"/>
                                                 <TextBlock Text="{Binding AccountName}"
-                                                           FontSize="11"
-                                                           Foreground="#9CA3AF"
+                                                           FontSize="12" Foreground="#94A3B8"
+                                                           FontFamily="Segoe UI"
                                                            TextTrimming="CharacterEllipsis"/>
                                             </StackPanel>
 
-                                            <!-- Actions -->
+                                            <!-- Actions: timer + copy + delete -->
                                             <StackPanel Grid.Column="2"
-                                                        Orientation="Vertical"
-                                                        VerticalAlignment="Center">
+                                                        VerticalAlignment="Center"
+                                                        HorizontalAlignment="Right"
+                                                        Margin="8,0,0,0">
+
+                                                <!-- Seconds remaining -->
+                                                <Border Background="#F1F5F9" CornerRadius="8"
+                                                        Padding="7,3" Margin="0,0,0,8"
+                                                        HorizontalAlignment="Center">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="{Binding SecondsRemaining, Mode=OneWay}"
+                                                                   FontSize="13" FontWeight="Bold"
+                                                                   Foreground="{Binding AccentBrush}"
+                                                                   FontFamily="Consolas"/>
+                                                        <TextBlock Text="s"
+                                                                   FontSize="11" Foreground="#94A3B8"
+                                                                   Margin="1,0,0,1"
+                                                                   VerticalAlignment="Bottom"/>
+                                                    </StackPanel>
+                                                </Border>
+
+                                                <!-- Copy -->
                                                 <Button Style="{StaticResource CopyButton}"
-                                                        Content="Copy"
-                                                        Click="CopyCode_Click"
-                                                        Tag="{Binding}"/>
+                                                        Click="CopyCode_Click" Tag="{Binding}"
+                                                        Margin="0,0,0,6">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="&#xE8C8;"
+                                                                   FontFamily="Segoe MDL2 Assets"
+                                                                   FontSize="12"
+                                                                   VerticalAlignment="Center"/>
+                                                        <TextBlock Text=" Copy"
+                                                                   FontFamily="Segoe UI"
+                                                                   FontSize="12"
+                                                                   VerticalAlignment="Center"
+                                                                   Margin="2,0,0,0"/>
+                                                    </StackPanel>
+                                                </Button>
+
+                                                <!-- Delete -->
                                                 <Button Style="{StaticResource DeleteButton}"
-                                                        Content="✕"
-                                                        Click="DeleteAccount_Click"
-                                                        Tag="{Binding}"
-                                                        Margin="0,4,0,0"/>
+                                                        Click="DeleteAccount_Click" Tag="{Binding}"
+                                                        ToolTip="Remove account">
+                                                    <TextBlock Text="&#xE74D;"
+                                                               FontFamily="Segoe MDL2 Assets"
+                                                               FontSize="13"/>
+                                                </Button>
                                             </StackPanel>
                                         </Grid>
 
-                                        <!-- Per-card countdown bar -->
-                                        <ProgressBar Grid.Row="1"
-                                                     Value="{Binding Progress, Mode=OneWay}"
-                                                     Minimum="0" Maximum="100"
-                                                     Foreground="{Binding AccentBrush}"
-                                                     Style="{StaticResource TimerProgressBar}"/>
+                                        <!-- Per-card progress bar -->
+                                        <Border Grid.Row="1" CornerRadius="0,0,12,12"
+                                                ClipToBounds="True">
+                                            <ProgressBar Value="{Binding Progress, Mode=OneWay}"
+                                                         Minimum="0" Maximum="100"
+                                                         Foreground="{Binding AccentBrush}"
+                                                         BorderThickness="0" Height="4">
+                                                <ProgressBar.Background>
+                                                    <SolidColorBrush Color="#F1F5F9"/>
+                                                </ProgressBar.Background>
+                                            </ProgressBar>
+                                        </Border>
                                     </Grid>
                                 </Border>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
+
                 </Grid>
             </ScrollViewer>
+
+            <!-- ── Floating Action Button ───────────────────────────────── -->
+            <Button Style="{StaticResource FabButton}"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Margin="0,0,22,22"
+                    Click="AddAccount_Click"
+                    ToolTip="Add account"/>
+
         </Grid>
+
     </Grid>
 </Window>

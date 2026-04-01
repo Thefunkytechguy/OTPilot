@@ -1,0 +1,222 @@
+<Window x:Class="OTPilot.Views.StorageSetupWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="OTPilot — Setup"
+        Width="420" Height="530"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Background="White">
+
+    <Window.Resources>
+        <Style x:Key="CardBorder" TargetType="Border">
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="BorderBrush" Value="#E5E7EB"/>
+            <Setter Property="Background" Value="#F9FAFB"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+            <Setter Property="Padding" Value="16,12"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style x:Key="SetupButton" TargetType="Button">
+            <Setter Property="Background" Value="#2563EB"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="24,10"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#1D4ED8"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#D1D5DB"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="BrowseButton" TargetType="Button">
+            <Setter Property="Background" Value="#F3F4F6"/>
+            <Setter Property="Foreground" Value="#374151"/>
+            <Setter Property="BorderBrush" Value="#D1D5DB"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#E5E7EB"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="70"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="64"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#0F172A">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="20,0">
+                <Image Source="/Resources/OTPilot.ico"
+                       Width="32" Height="32"
+                       RenderOptions.BitmapScalingMode="HighQuality"/>
+                <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
+                    <TextBlock FontFamily="Bahnschrift" FontSize="16" FontWeight="SemiBold">
+                        <Run Text="OTP " Foreground="#00A0DF"/>
+                        <Run Text="Pilot" Foreground="#F2F2F2"/>
+                    </TextBlock>
+                    <TextBlock Text="First-time setup"
+                               FontSize="10" FontFamily="Bahnschrift SemiLight"
+                               Foreground="#00A0DF"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Content -->
+        <StackPanel Grid.Row="1" Margin="20,20,20,10">
+
+            <TextBlock Text="Where should your accounts be stored?"
+                       FontSize="14" FontWeight="SemiBold" Foreground="#111827"
+                       Margin="0,0,0,4"/>
+            <TextBlock Text="This determines how your accounts follow you across machines."
+                       FontSize="12" Foreground="#6B7280"
+                       Margin="0,0,0,18" TextWrapping="Wrap"/>
+
+            <!-- OneDrive card -->
+            <Border x:Name="OneDriveCard" Style="{StaticResource CardBorder}"
+                    MouseLeftButtonUp="OneDriveCard_Click">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                            <TextBlock Text="OneDrive for Business"
+                                       FontSize="13" FontWeight="SemiBold" Foreground="#111827"/>
+                            <Border Background="#DBEAFE" CornerRadius="4"
+                                    Padding="6,2" Margin="8,0,0,0"
+                                    VerticalAlignment="Center">
+                                <TextBlock Text="Recommended" FontSize="10"
+                                           Foreground="#1D4ED8" FontWeight="SemiBold"/>
+                            </Border>
+                        </StackPanel>
+                        <TextBlock Text="Accounts follow you to any machine automatically via OneDrive sync."
+                                   FontSize="11" Foreground="#6B7280" TextWrapping="Wrap"/>
+                        <TextBlock x:Name="OneDriveUnavailableText"
+                                   Text="⚠  OneDrive not detected on this machine"
+                                   FontSize="10" Foreground="#EF4444"
+                                   Margin="0,6,0,0" Visibility="Collapsed"/>
+                    </StackPanel>
+                    <TextBlock Grid.Column="1" Text="☁" FontSize="28"
+                               Foreground="#93C5FD" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                </Grid>
+            </Border>
+
+            <!-- Local card -->
+            <Border x:Name="LocalCard" Style="{StaticResource CardBorder}"
+                    MouseLeftButtonUp="LocalCard_Click">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="This machine only"
+                                   FontSize="13" FontWeight="SemiBold" Foreground="#111827"
+                                   Margin="0,0,0,4"/>
+                        <TextBlock Text="Accounts stay on this PC. Does not follow you between machines."
+                                   FontSize="11" Foreground="#6B7280" TextWrapping="Wrap"/>
+                    </StackPanel>
+                    <TextBlock Grid.Column="1" Text="🖥" FontSize="26"
+                               VerticalAlignment="Center" Margin="10,0,0,0"/>
+                </Grid>
+            </Border>
+
+            <!-- Custom path card -->
+            <Border x:Name="CustomCard" Style="{StaticResource CardBorder}"
+                    MouseLeftButtonUp="CustomCard_Click">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="Custom location"
+                                   FontSize="13" FontWeight="SemiBold" Foreground="#111827"
+                                   Margin="0,0,0,4"/>
+                        <TextBlock Text="Choose any folder — network share, USB drive, or custom path."
+                                   FontSize="11" Foreground="#6B7280" TextWrapping="Wrap"/>
+                    </StackPanel>
+                    <TextBlock Grid.Column="1" Text="📁" FontSize="26"
+                               VerticalAlignment="Center" Margin="10,0,0,0"/>
+                </Grid>
+            </Border>
+
+            <!-- Custom path picker (shown only when Custom is selected) -->
+            <StackPanel x:Name="CustomPathPanel" Visibility="Collapsed" Margin="0,0,0,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="CustomPathTextBox"
+                             IsReadOnly="True"
+                             Background="#F9FAFB"
+                             BorderBrush="#D1D5DB"
+                             Padding="8,7"
+                             FontSize="11"
+                             Foreground="#374151"
+                             VerticalContentAlignment="Center"/>
+                    <Button Grid.Column="1" Content="Browse…"
+                            Style="{StaticResource BrowseButton}"
+                            Margin="8,0,0,0"
+                            Click="Browse_Click"/>
+                </Grid>
+            </StackPanel>
+
+        </StackPanel>
+
+        <!-- Footer -->
+        <Border Grid.Row="2" Background="#F9FAFB"
+                BorderBrush="#E5E7EB" BorderThickness="0,1,0,0"
+                Padding="20,0">
+            <Button x:Name="GetStartedButton"
+                    Content="Get Started →"
+                    Style="{StaticResource SetupButton}"
+                    IsEnabled="False"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Click="GetStarted_Click"/>
+        </Border>
+    </Grid>
+</Window>
