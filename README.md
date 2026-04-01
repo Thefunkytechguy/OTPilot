@@ -13,7 +13,7 @@
 
 In a PCI-compliant call centre, **mobile phones are not permitted on the floor**. Staff hot-desk across multiple workstations every shift, and existing tools like WinOTP store TOTP secrets **locally on the machine** — meaning users have to re-enrol their accounts on every machine they sit at. Lost or reimaged machines result in permanent loss of accounts, and IT support spends time on repeated re-enrolment requests.
 
-**OTP Pilot fixes this.** Your accounts follow you — wherever you log in.
+**OTP Pilot fixes this.** Your accounts follow you wherever you log in.
 
 ---
 
