@@ -43,7 +43,6 @@ Works without OneDrive too — a local storage mode encrypts the vault using Win
 - **Single instance** — opening a second window brings the existing one to focus
 - **Offline support** — DPAPI-cached key means the app works without a network connection
 - **Intune deployment** — silent Win32 app install, no user interaction required
-- **Open source** — every line is auditable
 
 ---
 
@@ -60,8 +59,6 @@ Works without OneDrive too — a local storage mode encrypts the vault using Win
 | No telemetry | No analytics, no callbacks, no clipboard logging |
 
 All cryptographic operations use **Microsoft's own `System.Security.Cryptography` namespace** — no third-party crypto libraries.
-
-For a full security and architecture writeup, see the [Design Document](https://github.com/Thefunkytechguy/OTPilot).
 
 ---
 
