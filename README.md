@@ -152,20 +152,6 @@ dotnet run
 
 ---
 
-## vs WinOTP
-
-| | WinOTP | OTP Pilot |
-|---|---|---|
-| Cross-machine roaming | No | Yes — OneDrive for Business |
-| Encryption | DPAPI | AES-256-GCM + DPAPI |
-| Hot-desk support | None | Full |
-| QR enrolment | Limited | Screen-capture, no camera needed |
-| Offline support | Yes | Yes |
-| Intune deployment | Manual | Native Win32 package |
-| Open source | No | Yes |
-
----
-
 ## License
 
 MIT — free to use, modify, and distribute.
