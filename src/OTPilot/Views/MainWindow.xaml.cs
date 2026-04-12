@@ -53,6 +53,12 @@ public partial class MainWindow : Window
         }
     }
 
+    private void Help_Click(object sender, RoutedEventArgs e)
+    {
+        var help = new HelpWindow { Owner = this };
+        help.ShowDialog();
+    }
+
     private void About_Click(object sender, RoutedEventArgs e)
     {
         var about = new AboutWindow { Owner = this };
