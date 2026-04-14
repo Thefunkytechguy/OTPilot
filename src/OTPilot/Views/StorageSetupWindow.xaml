@@ -194,6 +194,7 @@
                     </Grid.ColumnDefinitions>
                     <TextBox x:Name="CustomPathTextBox"
                              IsReadOnly="True"
+                             Height="34"
                              Background="White"
                              BorderBrush="#93C5FD"
                              BorderThickness="1.5"
