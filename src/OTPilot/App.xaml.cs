@@ -140,6 +140,24 @@ public partial class App : Application
         Shutdown();
     }
 
+    /// <summary>
+    /// Called when a settings change requires a full restart (e.g. storage provider change).
+    /// Launches a new instance and shuts down the current one cleanly.
+    /// </summary>
+    public static void ExitForRestart()
+    {
+        var exe = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName;
+        if (exe != null)
+            System.Diagnostics.Process.Start(exe);
+
+        _isExiting = true;
+        Current.Dispatcher.Invoke(() =>
+        {
+            ((App)Current)._trayIcon?.Dispose();
+            Current.Shutdown();
+        });
+    }
+
     private static System.Drawing.Icon LoadTrayIcon()
     {
         try

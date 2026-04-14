@@ -107,19 +107,18 @@ public partial class AddAccountWindow : Window
     {
         try
         {
-            // Use physical screen dimensions
-            var screenWidth = (int)SystemParameters.PrimaryScreenWidth;
-            var screenHeight = (int)SystemParameters.PrimaryScreenHeight;
-
-            // Get DPI scale — SystemParameters uses DIPs, CopyFromScreen uses physical pixels
+            // DPI scale — SystemParameters uses DIPs, CopyFromScreen uses physical pixels
             var source = PresentationSource.FromVisual(Application.Current.MainWindow);
             var dpiX = source?.CompositionTarget?.TransformToDevice.M11 ?? 1.0;
             var dpiY = source?.CompositionTarget?.TransformToDevice.M22 ?? 1.0;
 
-            var physWidth = (int)(screenWidth * dpiX);
-            var physHeight = (int)(screenHeight * dpiY);
+            // Use the virtual screen — covers ALL monitors, not just the primary
+            var left   = (int)(SystemParameters.VirtualScreenLeft   * dpiX);
+            var top    = (int)(SystemParameters.VirtualScreenTop    * dpiY);
+            var width  = (int)(SystemParameters.VirtualScreenWidth  * dpiX);
+            var height = (int)(SystemParameters.VirtualScreenHeight * dpiY);
 
-            return QrScanService.CaptureScreen(0, 0, physWidth, physHeight);
+            return QrScanService.CaptureScreen(left, top, width, height);
         }
         catch
         {

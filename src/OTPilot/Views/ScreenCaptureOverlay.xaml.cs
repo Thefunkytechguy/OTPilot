@@ -20,6 +20,12 @@ public partial class ScreenCaptureOverlay : Window
         InitializeComponent();
         _screenshot = screenshot;
 
+        // Span across all monitors — must be set before Show()
+        Left   = SystemParameters.VirtualScreenLeft;
+        Top    = SystemParameters.VirtualScreenTop;
+        Width  = SystemParameters.VirtualScreenWidth;
+        Height = SystemParameters.VirtualScreenHeight;
+
         Loaded += OnLoaded;
     }
 

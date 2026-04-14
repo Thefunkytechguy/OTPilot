@@ -246,8 +246,13 @@
                                Margin="6,0,0,0" VerticalAlignment="Center"/>
                 </StackPanel>
 
-                <!-- Help + About buttons -->
+                <!-- Settings + Help + About buttons -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <Button Style="{StaticResource TopBarButton}"
+                            Click="Settings_Click" ToolTip="Settings">
+                        <TextBlock Text="&#xE713;"
+                                   FontFamily="Segoe MDL2 Assets" FontSize="16"/>
+                    </Button>
                     <Button Style="{StaticResource TopBarButton}"
                             Click="Help_Click" ToolTip="Help">
                         <TextBlock Text="&#xE9CE;"
