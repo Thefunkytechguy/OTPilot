@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.txt)
 [![.NET 8](https://img.shields.io/badge/.NET-8.0-512BD4)](https://dotnet.microsoft.com/)
 [![Platform: Windows](https://img.shields.io/badge/Platform-Windows-0078D4)](https://github.com/Thefunkytechguy/OTPilot)
-[![Version](https://img.shields.io/badge/Version-1.3.0-00A0DF)](https://github.com/Thefunkytechguy/OTPilot/releases)
+[![Version](https://img.shields.io/badge/Version-1.5.0-00A0DF)](https://github.com/Thefunkytechguy/OTPilot/releases)
 
 ---
 
