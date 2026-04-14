@@ -47,43 +47,6 @@
             <Setter Property="VerticalAlignment" Value="Top"/>
         </Style>
 
-        <!-- Close button — rounded, consistent with app style -->
-        <Style x:Key="CloseButton" TargetType="Button">
-            <Setter Property="Background"    Value="#F1F5F9"/>
-            <Setter Property="Foreground"    Value="#374151"/>
-            <Setter Property="BorderBrush"   Value="#CBD5E1"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="FontFamily"    Value="Segoe UI"/>
-            <Setter Property="FontSize"      Value="12"/>
-            <Setter Property="FontWeight"    Value="SemiBold"/>
-            <Setter Property="Cursor"        Value="Hand"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="Bd"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="6"
-                                Padding="20,0">
-                            <ContentPresenter HorizontalAlignment="Center"
-                                              VerticalAlignment="Center"
-                                              TextElement.Foreground="{TemplateBinding Foreground}"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="#E2E8F0"/>
-                                <Setter TargetName="Bd" Property="BorderBrush" Value="#94A3B8"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="#CBD5E1"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
     </Window.Resources>
 
     <Grid>
@@ -234,16 +197,43 @@
         <!-- ── Footer ─────────────────────────────────────────── -->
         <Border Grid.Row="2"
                 Background="#F8FAFC"
+                BorderBrush="#E2E8F0"
                 BorderThickness="0,1,0,0"
-                BorderBrush="#E2E8F0">
+                Padding="28,0">
             <Button Content="Close"
                     IsDefault="True" IsCancel="True"
-                    Style="{StaticResource CloseButton}"
-                    Width="90" Height="34"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
-                    Margin="0,0,20,0"
-                    Click="Close_Click"/>
+                    Padding="20,7"
+                    FontFamily="Segoe UI" FontSize="12" FontWeight="SemiBold"
+                    Foreground="#374151"
+                    Cursor="Hand"
+                    Click="Close_Click">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd"
+                                Background="#F1F5F9"
+                                BorderBrush="#CBD5E1"
+                                BorderThickness="1"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              TextElement.Foreground="{TemplateBinding Foreground}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background"  Value="#E2E8F0"/>
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="#94A3B8"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#CBD5E1"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
         </Border>
+
     </Grid>
 </Window>
