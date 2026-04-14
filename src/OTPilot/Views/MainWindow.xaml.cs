@@ -53,24 +53,10 @@ public partial class MainWindow : Window
         }
     }
 
-    private async void Settings_Click(object sender, RoutedEventArgs e)
+    private void Settings_Click(object sender, RoutedEventArgs e)
     {
-        var confirm = MessageBox.Show(
-            "Changing your storage location will restart OTPilot.\n\n" +
-            "Your existing accounts will remain in the current location and will not be migrated automatically.\n\n" +
-            "Continue?",
-            "Change Storage Location",
-            MessageBoxButton.YesNo,
-            MessageBoxImage.Question);
-
-        if (confirm != MessageBoxResult.Yes) return;
-
-        var setup = new StorageSetupWindow { Owner = this };
-        if (setup.ShowDialog() == true && setup.ResultConfig is not null)
-        {
-            await Services.AppConfigService.SaveAsync(setup.ResultConfig);
-            App.ExitForRestart();
-        }
+        var settings = new SettingsWindow(_viewModel.StorageName) { Owner = this };
+        settings.ShowDialog();
     }
 
     private void Help_Click(object sender, RoutedEventArgs e)
